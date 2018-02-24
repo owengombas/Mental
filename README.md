@@ -1,4 +1,5 @@
 # Mental
+**Demo: https://lab.daven.io/**  
 Train your mental calculation
 
 ## Build Setup
