@@ -14,7 +14,7 @@
         </svg>
       </button>
 
-      <button id="refresh" @click="updateMental">
+      <button id="refresh" @click="updateMental()">
         <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
             viewBox="0 0 489.711 489.711" style="enable-background:new 0 0 489.711 489.711;" xml:space="preserve">
           <g>
@@ -42,6 +42,14 @@
         </svg>
       </button>
     </div>
+    <div id="states">
+      <div id="wins">
+        Up in {{maxWins - wins}} wins
+      </div>
+      <div id="fails">
+        Down in {{maxFails - fails}} fails
+      </div>
+    </div>
   </div>
 </template>
 
@@ -55,8 +63,11 @@ export default {
       answer: null,
       numbers: 2,
       fails: 0,
+      maxFails: 3,
+      maxWins: 3,
       wins: 0,
-      update: true
+      update: true,
+      timer: 0
     }
   },
   methods: {
@@ -64,7 +75,7 @@ export default {
       if (this.answer === this.mental.result) {
         this.fails = 0
         this.wins++
-        if (this.wins >= 2) {
+        if (this.wins >= this.maxWins) {
           this.wins = 0
           this.setLevel(1)
         } else {
@@ -73,7 +84,7 @@ export default {
       } else {
         this.wins = 0
         this.fails++
-        if (this.fails >= 3) {
+        if (this.fails >= this.maxFails) {
           this.fails = 0
           if (this.numbers > 2) {
             this.setLevel(-1)
@@ -88,10 +99,15 @@ export default {
       this.update = !this.update
     },
     setLevel (value) {
+      this.resetStates()
       let newValue = this.numbers + value
       if (newValue >= 2 && newValue < 10) {
         this.numbers = newValue
       }
+    },
+    resetStates () {
+      this.fails = 0
+      this.wins = 0
     }
   },
   computed: {
