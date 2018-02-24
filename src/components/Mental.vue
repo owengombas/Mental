@@ -43,10 +43,10 @@
       </button>
     </div>
     <div id="states">
-      <div id="wins">
+      <div id="wins" v-if="numbers < maxNumbers">
         Up in {{maxWins - wins}} wins
       </div>
-      <div id="fails">
+      <div id="fails" v-if="numbers > minNumbers">
         Down in {{maxFails - fails}} fails
       </div>
     </div>
@@ -59,9 +59,12 @@ import generator from '../script/generator'
 export default {
   name: 'Mental',
   data () {
+    let minNumbers = 2
     return {
       answer: null,
-      numbers: 2,
+      maxNumbers: 10,
+      minNumbers: minNumbers,
+      numbers: minNumbers,
       fails: 0,
       maxFails: 3,
       maxWins: 3,
@@ -86,10 +89,8 @@ export default {
         this.fails++
         if (this.fails >= this.maxFails) {
           this.fails = 0
-          if (this.numbers > 2) {
+          if (this.numbers > this.minNumbers) {
             this.setLevel(-1)
-          } else {
-            this.updateMental()
           }
         }
       }
@@ -101,7 +102,7 @@ export default {
     setLevel (value) {
       this.resetStates()
       let newValue = this.numbers + value
-      if (newValue >= 2 && newValue < 10) {
+      if (newValue >= this.minNumbers && newValue <= this.maxNumbers) {
         this.numbers = newValue
       }
     },
