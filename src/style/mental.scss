@@ -1,0 +1,14 @@
+#controls {
+    margin-top: 20px;
+    #refresh {
+        svg {
+            width: 25px;
+        }
+    }
+    #up {
+        transform: rotate(180deg);
+    }
+    svg {
+        fill: rgb(150, 150, 150)
+    }
+}
