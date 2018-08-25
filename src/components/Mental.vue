@@ -1,11 +1,14 @@
 <template>
   <div class="hello">
+    <h2>
+      {{actualTime.toFixed(0)}} s
+    </h2>
     <h1>
       {{mental.text}}
     </h1>
-    <input type="text" placeholder="Equal" @keydown.enter="validate" v-model.number="answer"/>
+    <input :class="{'win': winned === 1, 'loose': winned === -1}" type="text" placeholder="Equal..." @keydown.enter="validate" v-model.number="answer"/>
     <div id="controls">
-      <button @click="setLevel(-1)" id="down">
+      <button @click="setLevel(-1)" id="down" :disabled="level <= minLevel">
         <svg version="1.1" id="Capa_1" width="25px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
           viewBox="0 0 28 28" style="enable-background:new 0 0 30 30;" xml:space="preserve">
           <path d="M10.273,5.009c0.444-0.444,1.143-0.444,1.587,0c0.429,0.429,0.429,1.143,0,1.571l-8.047,8.047h26.554
@@ -14,7 +17,7 @@
         </svg>
       </button>
 
-      <button id="refresh" @click="updateMental()">
+      <button id="refresh" @click="generate">
         <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
             viewBox="0 0 489.711 489.711" style="enable-background:new 0 0 489.711 489.711;" xml:space="preserve">
           <g>
@@ -33,7 +36,7 @@
         </svg>
       </button>
 
-      <button @click="setLevel(1)" id="up">
+      <button @click="setLevel(1)" id="up" :disabled="level >= maxLevel">
         <svg version="1.1" id="Capa_1" width="25px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
           viewBox="0 0 28 28" style="enable-background:new 0 0 30 30;" xml:space="preserve">
           <path d="M10.273,5.009c0.444-0.444,1.143-0.444,1.587,0c0.429,0.429,0.429,1.143,0,1.571l-8.047,8.047h26.554
@@ -42,12 +45,26 @@
         </svg>
       </button>
     </div>
-    <div id="states">
-      <div id="wins" v-if="numbers < maxNumbers">
+    <div class="states">
+      <div id="wins" v-if="level < maxLevel">
         Up in {{maxWins - wins}} wins
       </div>
-      <div id="fails" v-if="numbers > minNumbers">
+      <div id="fails" v-if="level > minLevel">
         Down in {{maxFails - fails}} fails
+      </div>
+    </div>
+    <div class="states">
+      <div>
+        Level: {{level - 1}}
+      </div>
+      <div>
+        Wins: {{totalWins}}
+      </div>
+      <div>
+        Fails: {{totalFails}}
+      </div>
+      <div>
+        Average time: {{averageTime}}
       </div>
     </div>
   </div>
@@ -59,76 +76,121 @@ import generator from '../script/generator'
 export default {
   name: 'Mental',
   data () {
-    let minNumbers = 2
+    let minLevel = 2
     return {
+			mental: {
+				text: null,
+				result: null
+			},
       answer: null,
-      maxNumbers: 10,
-      minNumbers: minNumbers,
-      numbers: minNumbers,
+      maxLevel: 11,
+      minLevel: minLevel,
+      level: minLevel,
       fails: 0,
       maxFails: 3,
       maxWins: 3,
       wins: 0,
-      update: true,
-      timer: 0
+			timer: null,
+			actualTime: 0,
+			passedTime: 0,
+      maxNumber: 10,
+			winned: 0,
+			totalWins: 0,
+			totalFails: 0
     }
   },
   methods: {
-    validate: function () {
+    validate () {
       if (this.answer === this.mental.result) {
+				this.totalWins++
         this.fails = 0
         this.wins++
+        this.maxNumber += 2
+        this.winned = 1
         if (this.wins >= this.maxWins) {
           this.wins = 0
           this.setLevel(1)
         } else {
-          this.updateMental()
+          this.generate()
         }
       } else {
+				this.totalFails++
         this.wins = 0
         this.fails++
+        this.maxNumber > 10 && --this.maxNumber
+        this.winned = -1
         if (this.fails >= this.maxFails) {
           this.fails = 0
-          if (this.numbers > this.minNumbers) {
+          if (this.level > this.minLevel) {
             this.setLevel(-1)
           }
         }
       }
+      setTimeout(this.winned = 0, 3000)
       this.answer = null
     },
-    updateMental: function () {
+    updateMental () {
       this.update = !this.update
     },
     setLevel (value) {
       this.resetStates()
-      let newValue = this.numbers + value
-      if (newValue >= this.minNumbers && newValue <= this.maxNumbers) {
-        this.numbers = newValue
-      }
+      let newValue = this.level + value
+      if (newValue >= this.minLevel && newValue <= this.maxLevel) {
+        this.level = newValue
+				this.generate()
+			}
     },
     resetStates () {
       this.fails = 0
       this.wins = 0
-    }
-  },
+		},
+		generate () {
+			this.passedTime += this.actualTime
+			this.actualTime = 0
+			this.timer && clearInterval(this.timer)
+			this.timer = setInterval(() => {
+				this.actualTime += 0.1
+			}, 100)
+      this.mental = generator(this.level, this.maxNumber)
+		}
+	},
+	created () {
+		this.generate()
+	},
   computed: {
-    mental: function () {
-      this.update.toString()
-      return generator.getRandom(this.numbers)
-    }
+		totalResponse () {
+			return this.totalWins + this.totalFails
+		},
+		averageTime () {
+			return this.totalResponse > 0 ? (this.passedTime / this.totalResponse).toFixed(1) : '...'
+		}
   }
 }
 </script>
 
-<style lang="scss" scoped>
-  @import '../style/mental.scss';
-</style>
+<style lang="stylus" scoped>
+#controls
+	margin-top: 20px
+	#refresh
+		svg
+			width: 25px
+	#up
+		transform: rotate(180deg)
+	svg
+		fill: rgb(150, 150, 150)
 
-<style scoped>
-  .fade-enter-active, .fade-leave-active {
-    transition: opacity .15s ease-in-out;
-  }
-  .fade-enter, .fade-leave-to {
-    opacity: 0;
-  }
+.states
+	user-select none
+	margin-top: 40px
+	font-weight: bold
+
+.win
+	border: 3px solid green
+
+h2
+	color #ccc
+	position fixed
+	bottom 0
+	right: 30px
+	font-size 2em
 </style>
