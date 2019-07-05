@@ -1,12 +1,11 @@
 <template>
   <div class="hello">
-    <h2>
-      {{actualTime.toFixed(0)}} s
-    </h2>
     <h1>
       {{mental.text}}
     </h1>
+
     <input :class="{'win': winned === 1, 'loose': winned === -1}" type="text" placeholder="Equal..." @keydown.enter="validate" v-model.number="answer"/>
+
     <div id="controls">
       <button @click="setLevel(-1)" id="down" :disabled="level <= minLevel">
         <svg version="1.1" id="Capa_1" width="25px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -16,7 +15,6 @@
           c-0.444,0.444-1.143,0.444-1.587,0l-9.952-9.952c-0.429-0.429-0.429-1.143,0-1.571L10.273,5.009z"/>
         </svg>
       </button>
-
       <button id="refresh" @click="generate">
         <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
             viewBox="0 0 489.711 489.711" style="enable-background:new 0 0 489.711 489.711;" xml:space="preserve">
@@ -35,7 +33,6 @@
           </g>
         </svg>
       </button>
-
       <button @click="setLevel(1)" id="up" :disabled="level >= maxLevel">
         <svg version="1.1" id="Capa_1" width="25px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
           viewBox="0 0 28 28" style="enable-background:new 0 0 30 30;" xml:space="preserve">
@@ -45,14 +42,19 @@
         </svg>
       </button>
     </div>
+
     <div class="states">
-      <div id="wins" v-if="level < maxLevel">
+      <h2>
+        {{actualTime.toFixed(0)}} s
+      </h2>
+      <!--<div id="wins" v-if="level < maxLevel">
         Up in {{maxWins - wins}} wins
       </div>
       <div id="fails" v-if="level > minLevel">
         Down in {{maxFails - fails}} fails
-      </div>
+      </div>-->
     </div>
+
     <div class="states">
       <div>
         Level: {{level - 1}}
@@ -67,6 +69,47 @@
         Average time: {{averageTime}}
       </div>
     </div>
+
+    <div v-for="(difficulty, index) in historyLevels" :key="index" class="history">
+      <div v-if="history[difficulty] && difficulty" class="history-container">
+        <h1>History for difficulty {{ difficulty }}</h1>
+        <table class="history-table">
+          <thead>
+            <tr class="history-item-header">
+              <th class="history-item-text">
+                Calculus
+              </th>
+              <th class="history-item-fails">
+                Fails
+              </th>
+              <th class="history-item-fails">
+                Difficulty
+              </th>
+              <th class="history-item-time">
+                Time
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="history-item" v-for="(item, index) in sortedHistory[difficulty]" :key="index">
+              <td class="history-item-text">
+                <div class="indicator" :style="{opacity: 1 / (index + 1)}"></div>
+                {{ item.text }}
+              </td>
+              <td class="history-item-fails">
+                {{ item.fails }}
+              </td>
+              <td class="history-item-fails">
+                {{ item.difficulty }}
+              </td>
+              <td class="history-item-time">
+                {{ item.time.toFixed(2) }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -78,10 +121,11 @@ export default {
   data () {
     let minLevel = 2
     return {
-			mental: {
-				text: null,
-				result: null
-			},
+      mental: {
+        text: null,
+        result: null
+      },
+      history: {},
       answer: null,
       maxLevel: 11,
       minLevel: minLevel,
@@ -90,19 +134,29 @@ export default {
       maxFails: 3,
       maxWins: 3,
       wins: 0,
-			timer: null,
-			actualTime: 0,
-			passedTime: 0,
-      maxNumber: 10,
-			winned: 0,
-			totalWins: 0,
-			totalFails: 0
+      timer: null,
+      actualTime: 0,
+      passedTime: 0,
+      maxNumber: 100,
+      winned: 0,
+      totalWins: 0,
+      totalFails: 0
     }
   },
   methods: {
     validate () {
       if (this.answer === this.mental.result) {
-				this.totalWins++
+        if (!this.history[this.level]) {
+          this.$set(this.history, this.level, [])
+        }
+        this.history[this.level].push({
+          ...this.mental,
+          fails: this.fails,
+          time: this.actualTime,
+          difficulty: this.level
+        })
+        localStorage.setItem('history', JSON.stringify(this.history))
+        this.totalWins++
         this.fails = 0
         this.wins++
         this.maxNumber += 2
@@ -114,7 +168,7 @@ export default {
           this.generate()
         }
       } else {
-				this.totalFails++
+        this.totalFails++
         this.wins = 0
         this.fails++
         this.maxNumber > 10 && --this.maxNumber
@@ -126,71 +180,141 @@ export default {
           }
         }
       }
-      setTimeout(this.winned = 0, 3000)
+      setTimeout(() => this.winned = 0, 1000)
       this.answer = null
     },
     updateMental () {
       this.update = !this.update
     },
     setLevel (value) {
+      this.winned = 0
       this.resetStates()
       let newValue = this.level + value
       if (newValue >= this.minLevel && newValue <= this.maxLevel) {
         this.level = newValue
-				this.generate()
-			}
+        this.generate()
+      }
     },
     resetStates () {
       this.fails = 0
       this.wins = 0
-		},
-		generate () {
-			this.passedTime += this.actualTime
-			this.actualTime = 0
-			this.timer && clearInterval(this.timer)
-			this.timer = setInterval(() => {
-				this.actualTime += 0.1
-			}, 100)
+    },
+    generate () {
+      this.passedTime += this.actualTime
+      this.actualTime = 0
+      this.timer && clearInterval(this.timer)
+      this.timer = setInterval(() => {
+        this.actualTime += 0.1
+      }, 100)
       this.mental = generator(this.level, this.maxNumber)
-		}
-	},
-	created () {
-		this.generate()
-	},
+    }
+  },
+  created () {
+    this.generate()
+    const history = localStorage.getItem('history')
+    if (history) {
+      this.history = JSON.parse(history)
+    }
+  },
   computed: {
-		totalResponse () {
-			return this.totalWins + this.totalFails
-		},
-		averageTime () {
-			return this.totalResponse > 0 ? (this.passedTime / this.totalResponse).toFixed(1) : '...'
-		}
+    totalResponse () {
+      return this.totalWins + this.totalFails
+    },
+    averageTime () {
+      return this.totalResponse > 0 ? (this.passedTime / this.totalResponse).toFixed(1) : 0
+    },
+    historyLevels () {
+      return Object.keys(this.history)
+    },
+    sortedHistory () {
+      return this.historyLevels.reduce((prev, difficulty) => {
+        const items = this.history[difficulty].sort((a, b) => {
+          if (a.time > b.time) {
+            return -1
+          }
+          if (a.time < b.time) {
+            return 1
+          }
+          return 0;
+        })
+        return {
+          ...prev,
+          [difficulty]: items
+        }
+      }, {})
+    }
   }
 }
 </script>
 
 <style lang="stylus" scoped>
+.history
+  margin-top 100px
+  display flex
+  justify-content center
+  margin-bottom 35px
+
+.history-item-header
+  font-size 1.6em
+  height: 2em
+  font-weight bolder
+
+.history-container
+  width 90%
+
+.history-table
+  width 100%
+
+.history-item
+  font-size 1.5em
+  margin-top 14px
+  margin-bottom 14px
+
+.history-item-text
+  font-weight bold
+  display flex
+  align-items center
+
+.history-item-time
+  text-align right
+
+.indicator
+  margin-right 10px
+  height 100%
+  width: 10px
+  height 10px
+  background red
+  border-radius 20px
+
 #controls
-	margin-top: 20px
-	#refresh
-		svg
-			width: 25px
-	#up
-		transform: rotate(180deg)
-	svg
-		fill: rgb(150, 150, 150)
+  margin-top: 20px
+  #refresh
+    svg
+      width: 25px
+  #up
+    transform: rotate(180deg)
+  svg
+    fill: rgb(150, 150, 150)
 
 .states
-	user-select none
-	margin-top: 40px
-	font-weight: bold
+  user-select none
+  margin-top: 40px
+  font-weight: bold
 
 .win
-	border: 3px solid green
+  border: 3px solid #53d397
+
+.loose
+  border: 3px solid #ff1f5a
+
+input
+  transition all .2s
+  border 3px solid transparent
+  outline: none
+  &:focus
+    outline: none
 
 h2
-	color #ccc
-	position fixed
-	bottom 0
-	right: 30px
-	font-size 2em
+  color #ccc
+  font-size 2em
 </style>
