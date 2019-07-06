@@ -164,6 +164,7 @@ export default {
         this.wins++
         this.maxNumber += 2
         this.winned = 1
+        this.generate()
         // if (this.wins >= this.maxWins) {
         //   this.wins = 0
         //   this.setLevel(1)
