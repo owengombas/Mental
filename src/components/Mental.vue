@@ -93,7 +93,7 @@
           <tbody>
             <tr class="history-item" v-for="(item, index) in sortedHistory[difficulty]" :key="index">
               <td class="history-item-text">
-                <div class="indicator" :style="{opacity: (item.time / historyTimeSums[difficulty]) + 0.08}"></div>
+                <div class="indicator" :style="{opacity: (item.time / sortedHistory[difficulty][0].time) + 0.08}"></div>
                 {{ item.text }} = {{ item.result }}
               </td>
               <td class="history-item-fails">
