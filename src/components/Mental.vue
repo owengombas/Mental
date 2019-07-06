@@ -93,7 +93,7 @@
           <tbody>
             <tr class="history-item" v-for="(item, index) in sortedHistory[difficulty]" :key="index">
               <td class="history-item-text">
-                <div class="indicator" :style="{opacity: (item.time / sortedHistory[difficulty][0].time) + 0.08}"></div>
+                <div class="indicator" :style="{opacity: (item.time / sortedHistory[difficulty][0].time)}"></div>
                 {{ item.text }} = {{ item.result }}
               </td>
               <td class="history-item-fails">
@@ -164,24 +164,24 @@ export default {
         this.wins++
         this.maxNumber += 2
         this.winned = 1
-        if (this.wins >= this.maxWins) {
-          this.wins = 0
-          this.setLevel(1)
-        } else {
-          this.generate()
-        }
+        // if (this.wins >= this.maxWins) {
+        //   this.wins = 0
+        //   this.setLevel(1)
+        // } else {
+        //   this.generate()
+        // }
       } else {
         this.totalFails++
         this.wins = 0
         this.fails++
         this.maxNumber > 10 && --this.maxNumber
         this.winned = -1
-        if (this.fails >= this.maxFails) {
-          this.fails = 0
-          if (this.level > this.minLevel) {
-            this.setLevel(-1)
-          }
-        }
+        // if (this.fails >= this.maxFails) {
+        //   this.fails = 0
+        //   if (this.level > this.minLevel) {
+        //     this.setLevel(-1)
+        //   }
+        // }
       }
       setTimeout(() => this.winned = 0, 1000)
       this.answer = null
@@ -190,7 +190,6 @@ export default {
       this.update = !this.update
     },
     setLevel (value) {
-      this.winned = 0
       this.resetStates()
       let newValue = this.level + value
       if (newValue >= this.minLevel && newValue <= this.maxLevel) {
