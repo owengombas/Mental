@@ -15,7 +15,7 @@
           c-0.444,0.444-1.143,0.444-1.587,0l-9.952-9.952c-0.429-0.429-0.429-1.143,0-1.571L10.273,5.009z"/>
         </svg>
       </button>
-      <button id="refresh" @click="generate">
+      <button id="refresh" @click="generate(true)">
         <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
             viewBox="0 0 489.711 489.711" style="enable-background:new 0 0 489.711 489.711;" xml:space="preserve">
           <g>
@@ -108,6 +108,9 @@
             </tr>
           </tbody>
         </table>
+        <div class="states">
+          <button @click="clearHistory" class="btn">Clear history</button>
+        </div>
       </div>
     </div>
   </div>
@@ -199,14 +202,29 @@ export default {
       this.fails = 0
       this.wins = 0
     },
-    generate () {
-      this.passedTime += this.actualTime
+    generate (forced = false) {
+      if (!forced) {
+        this.passedTime += this.actualTime
+      }
       this.actualTime = 0
       this.timer && clearInterval(this.timer)
       this.timer = setInterval(() => {
         this.actualTime += 0.1
       }, 100)
       this.mental = generator(this.level, this.maxNumber)
+    },
+    sort(a, b) {
+      if (a.time > b.time) {
+        return -1
+      }
+      if (a.time < b.time) {
+        return 1
+      }
+      return 0
+    },
+    clearHistory() {
+      localStorage.removeItem('history')
+      this.history = {}
     }
   },
   created () {
@@ -227,16 +245,8 @@ export default {
       return Object.keys(this.history)
     },
     sortedHistory () {
-      return this.historyLevels.reduce((prev, difficulty) => {
-        const items = this.history[difficulty].sort((a, b) => {
-          if (a.time > b.time) {
-            return -1
-          }
-          if (a.time < b.time) {
-            return 1
-          }
-          return 0;
-        })
+      return this.historyLevels.sort(this.sort).reduce((prev, difficulty) => {
+        const items = this.history[difficulty].sort(this.sort)
         return {
           ...prev,
           [difficulty]: items
@@ -317,4 +327,15 @@ input
 h2
   color #ccc
   font-size 2em
+
+.btn
+  font-size 1.2em
+  border-radius 10px
+  font-weight bold
+  color white
+  background #2c3e50
+  padding 0.7em 1em
+  transition all .2s
+  &:active
+    transform scale(0.9)
 </style>
