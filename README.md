@@ -1,11 +1,11 @@
 # Mental
-**Demo: https://lab.daven.io/**  
+**[Demo](http://mental.calveen.me/)**  
 Train your mental calculation
 
 ## Build Setup
-``` bash
+```bash
 # install dependencies
-npm install
+npm i
 
 # serve with hot reload at localhost:8080
 npm run dev

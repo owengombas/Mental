@@ -93,8 +93,8 @@
           <tbody>
             <tr class="history-item" v-for="(item, index) in sortedHistory[difficulty]" :key="index">
               <td class="history-item-text">
-                <div class="indicator" :style="{opacity: 1 / (index + 1)}"></div>
-                {{ item.text }}
+                <div class="indicator" :style="{opacity: (item.time / historyTimeSums[difficulty]) + 0.08}"></div>
+                {{ item.text }} = {{ item.result }}
               </td>
               <td class="history-item-fails">
                 {{ item.fails }}
@@ -108,10 +108,10 @@
             </tr>
           </tbody>
         </table>
-        <div class="states">
-          <button @click="clearHistory" class="btn">Clear history</button>
-        </div>
       </div>
+    </div>
+    <div v-if="historyLevels.length > 0" class="clear">
+      <button @click="clearHistory" class="btn">Clear history</button>
     </div>
   </div>
 </template>
@@ -252,12 +252,30 @@ export default {
           [difficulty]: items
         }
       }, {})
+    },
+    historyTimeSums () {
+      return this.historyLevels.reduce((prev, difficulty) => {
+        const sum = this.history[difficulty].reduce((prev, item) => {
+          return prev + item.time
+        }, 0)
+        return {
+          ...prev,
+          [difficulty]: sum
+        }
+      }, {})
     }
   }
 }
 </script>
 
 <style lang="stylus" scoped>
+.clear
+  display flex
+  width 100%
+  margin-top 80px
+  margin-bottom 30px
+  justify-content center
+
 .history
   margin-top 100px
   display flex
