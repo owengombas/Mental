@@ -68,10 +68,10 @@
         level: <b>{{level - 1}}</b>
       </div>
       <div>
-        Wins: <b>{{totalWins}}</b>
+        wins: <b>{{totalWins}}</b>
       </div>
       <div>
-        Fails: <b>{{totalFails}}</b>
+        fails: <b>{{totalFails}}</b>
       </div>
     </div>
 
