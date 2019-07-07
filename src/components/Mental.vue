@@ -1,6 +1,6 @@
 <template>
   <div class="hello">
-    <h1>
+    <h1 :style="{fontSize}">
       {{mental.text}}
     </h1>
 
@@ -78,42 +78,44 @@
     <div v-for="(difficulty, index) in historyLevels" :key="index" class="history">
       <div v-if="history[difficulty] && difficulty" class="history-container">
         <h1>History for difficulty {{ difficulty }}</h1>
-        <table class="history-table">
-          <thead>
-            <tr class="history-item-header">
-              <th class="history-item-text">
-                Calculus
-              </th>
-              <th class="history-item-fails">
-                Fails
-              </th>
-              <th class="history-item-time">
-                Total time (s)
-              </th>
-              <th class="history-item-time">
-                Thinking time (s)
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="history-item" v-for="(item, index) in sortedHistory[difficulty]" :key="index">
-              <td class="history-item-text">
-                <div v-if="!item.giveup" class="indicator" :style="{opacity: (item.time / sortedHistory[difficulty][0].time)}"/>
-                <div v-else class="indicator give-up"/>
-                {{ item.text }} = {{ item.result }}
-              </td>
-              <td class="history-item-fails">
-                {{ item.fails }}
-              </td>
-              <td class="history-item-time">
-                {{ item.time.toFixed(2) }}
-              </td>
-              <td class="history-item-time">
-                {{ item.thinkingTime.toFixed(2) }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-container">
+          <table class="history-table">
+            <thead>
+              <tr class="history-item-header">
+                <th class="history-item-text">
+                  Calculus
+                </th>
+                <th class="history-item-fails">
+                  Fails
+                </th>
+                <th class="history-item-time">
+                  Total time (s)
+                </th>
+                <th class="history-item-time">
+                  Thinking time (s)
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="history-item" v-for="(item, index) in sortedHistory[difficulty]" :key="index">
+                <td class="history-item-text">
+                  <div v-if="!item.giveup" class="indicator" :style="{opacity: (item.time / sortedHistory[difficulty][0].time)}"/>
+                  <div v-else class="indicator give-up"/>
+                  {{ item.text }} = {{ item.result }}
+                </td>
+                <td class="history-item-fails">
+                  {{ item.fails }}
+                </td>
+                <td class="history-item-time">
+                  {{ item.time.toFixed(2) }}
+                </td>
+                <td class="history-item-time">
+                  {{ item.thinkingTime.toFixed(2) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
         <div v-if="historyTimeAverage[difficulty].time > 0" class="states">
           <div>
             average time: <b>{{historyTimeAverage[difficulty].time.toFixed(2)}}</b>
@@ -169,7 +171,8 @@ export default {
       typingTime: 0,
       isTyping: false,
       typingWait: false,
-      typingTimeTemp: 0
+      typingTimeTemp: 0,
+      fontSize: '2em'
     }
   },
   methods: {
@@ -275,6 +278,7 @@ export default {
         this.actualTime += 0.1
       }, 100)
       this.mental = generator(this.level, this.maxNumber)
+      this.setFontSize()
     },
     sort(a, b) {
       if (a.time > b.time) {
@@ -288,6 +292,15 @@ export default {
     clearHistory() {
       localStorage.removeItem('history')
       this.history = {}
+    },
+    setFontSize() {
+      const fontSize = (window.innerWidth / this.mental.text.length).toFixed(1) / 10
+      console.log(window.innerWidth, fontSize)
+      if (fontSize > 1.5 && fontSize < 3) {
+        this.fontSize = `${fontSize}em`
+      } else {
+        this.fontSize = undefined
+      }
     }
   },
   created () {
@@ -296,6 +309,7 @@ export default {
     if (history) {
       this.history = JSON.parse(history)
     }
+    window.addEventListener('resize', this.setFontSize)
   },
   computed: {
     totalResponse () {
@@ -395,6 +409,9 @@ export default {
 .history-container
   width 95%
 
+.table-container
+  overflow-x auto
+
 .history-table
   width 100%
 
@@ -424,8 +441,6 @@ export default {
 
 table
   width 100%
-  display block
-  overflow-x auto
   white-space nowrap
   border-collapse collapse
 
@@ -454,6 +469,21 @@ tr:nth-child(2n)
 
 .loose
   border: 3px solid #ff1f5a
+
+button
+	background: none
+	outline: none
+	border: none
+	cursor pointer
+	&:disabled
+		opacity .5
+
+h1
+	padding-bottom 25px
+	font-family 'Roboto Mono', monospace
+	font-size 2.5em
+	font-weight 700
+  letter-spacing 10px
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button

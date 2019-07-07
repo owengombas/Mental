@@ -26,18 +26,4 @@ export default {
 	color: #2c3e50
 	margin-top: 30px
 	overflow-x hidden
-
-button
-	background: none
-	outline: none
-	border: none
-	cursor pointer
-	&:disabled
-		opacity .5
-
-h1
-	padding-bottom 25px
-	font-family 'Roboto Mono', monospace
-	font-size 2.5em
-	font-weight 700
 </style>
