@@ -294,9 +294,9 @@ export default {
       this.history = {}
     },
     setFontSize() {
-      const fontSize = (window.innerWidth / this.mental.text.length).toFixed(1) / 10
+      const fontSize = (window.innerWidth / this.mental.text.length / 10 - 0.05).toFixed(2)
       console.log(window.innerWidth, fontSize)
-      if (fontSize > 1.5 && fontSize < 3) {
+      if (fontSize < 3) {
         this.fontSize = `${fontSize}em`
       } else {
         this.fontSize = undefined
