@@ -77,22 +77,22 @@
 
     <div v-for="(difficulty, index) in historyLevels" :key="index" class="history">
       <div v-if="history[difficulty] && difficulty" class="history-container">
-        <h1>History for level {{ difficulty }}</h1>
+        <h1>stats for level {{ difficulty }}</h1>
         <div class="table-container">
           <table class="history-table">
             <thead>
               <tr class="history-item-header">
                 <th class="history-item-text">
-                  Calculus
+                  calculation
                 </th>
                 <th class="history-item-fails">
-                  Fails
+                  fails
                 </th>
                 <th class="history-item-time">
-                  Total time (s)
+                  total time (s)
                 </th>
                 <th class="history-item-time">
-                  Thinking time (s)
+                  thinking time (s)
                 </th>
               </tr>
             </thead>
@@ -127,9 +127,15 @@
       </div>
     </div>
     <div v-if="historyLevels.length > 0" class="clear">
-      <button @click="clearHistory" class="btn">Clear history</button>
+      <button @click="clearHistory" class="btn">clear history</button>
     </div>
     <div class="note">
+      <div v-if="historyLevels.length > 0" class="italic">
+        <div class="indicator"/> &nbsp;&nbsp;&nbsp;This dot indicates your difficulty on a calculation (color intensity)
+      </div>
+      <div v-if="historyLevels.length > 0" class="italic">
+        <div class="indicator give-up"/> &nbsp;&nbsp;&nbsp;This dot indicates an abandoned calculation
+      </div>
       <div v-if="historyLevels.length > 0" class="italic">
         thinking time is the respone time without the typing time
       </div>
@@ -392,6 +398,12 @@ export default {
   font-style italic
 
 .note
+  div
+    display flex
+    align-items center
+    justify-content center
+    margin 0.5em 0
+  text-align center
   margin-top 100px
   margin-bottom 40px
 
@@ -521,4 +533,7 @@ h2
   transition all .2s
   &:active
     transform scale(0.9)
+
+#controls
+  user-select none
 </style>
