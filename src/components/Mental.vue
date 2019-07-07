@@ -131,10 +131,10 @@
     </div>
     <div class="note">
       <div v-if="historyLevels.length > 0" class="italic">
-        <div class="indicator"/> &nbsp;&nbsp;&nbsp;This dot indicates your difficulty on a calculation (color intensity)
+        <div class="indicator"/>this dot indicates your difficulty on a calculation (color intensity)
       </div>
       <div v-if="historyLevels.length > 0" class="italic">
-        <div class="indicator give-up"/> &nbsp;&nbsp;&nbsp;This dot indicates an abandoned calculation
+        <div class="indicator give-up"/>this dot indicates an abandoned calculation
       </div>
       <div v-if="historyLevels.length > 0" class="italic">
         thinking time is the respone time without the typing time
@@ -399,10 +399,9 @@ export default {
 
 .note
   div
-    display flex
-    align-items center
-    justify-content center
-    margin 0.5em 0
+    display inline-block
+  display flex
+  flex-direction column
   text-align center
   margin-top 100px
   margin-bottom 40px
@@ -442,9 +441,8 @@ export default {
 
 .indicator
   margin-right 10px
-  height 100%
-  width: 10px
-  height 10px
+  min-width: 10px
+  min-height 10px
   background red
   border-radius 20px
 
