@@ -4,7 +4,15 @@
       {{mental.text}}
     </h1>
 
-    <input :class="{'win': winned === 1, 'loose': winned === -1}" type="text" placeholder="Equal..." @keydown.enter="validate" v-model.number="answer"/>
+    <input
+    v-model.number="answer"
+    @input="type"
+    @blur="type"
+    @keydown.enter="validate"
+    :class="{'win': winned === 1, 'loose': winned === -1}"
+    type="number"
+    placeholder="equal..."
+    />
 
     <div id="controls">
       <button @click="setLevel(-1)" id="down" :disabled="level <= minLevel">
@@ -15,7 +23,7 @@
           c-0.444,0.444-1.143,0.444-1.587,0l-9.952-9.952c-0.429-0.429-0.429-1.143,0-1.571L10.273,5.009z"/>
         </svg>
       </button>
-      <button id="refresh" @click="generate(true)">
+      <button id="refresh" @click="regenerate">
         <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
             viewBox="0 0 489.711 489.711" style="enable-background:new 0 0 489.711 489.711;" xml:space="preserve">
           <g>
@@ -57,16 +65,13 @@
 
     <div class="states">
       <div>
-        Level: {{level - 1}}
+        level: <b>{{level - 1}}</b>
       </div>
       <div>
-        Wins: {{totalWins}}
+        Wins: <b>{{totalWins}}</b>
       </div>
       <div>
-        Fails: {{totalFails}}
-      </div>
-      <div>
-        Average time: {{averageTime}}
+        Fails: <b>{{totalFails}}</b>
       </div>
     </div>
 
@@ -82,42 +87,59 @@
               <th class="history-item-fails">
                 Fails
               </th>
-              <th class="history-item-fails">
-                Difficulty
+              <th class="history-item-time">
+                Total time (s)
               </th>
               <th class="history-item-time">
-                Time
+                Thinking time (s)
               </th>
             </tr>
           </thead>
           <tbody>
             <tr class="history-item" v-for="(item, index) in sortedHistory[difficulty]" :key="index">
               <td class="history-item-text">
-                <div class="indicator" :style="{opacity: (item.time / sortedHistory[difficulty][0].time)}"></div>
+                <div v-if="!item.giveup" class="indicator" :style="{opacity: (item.time / sortedHistory[difficulty][0].time)}"/>
+                <div v-else class="indicator give-up"/>
                 {{ item.text }} = {{ item.result }}
               </td>
               <td class="history-item-fails">
                 {{ item.fails }}
               </td>
-              <td class="history-item-fails">
-                {{ item.difficulty }}
-              </td>
               <td class="history-item-time">
                 {{ item.time.toFixed(2) }}
+              </td>
+              <td class="history-item-time">
+                {{ item.thinkingTime.toFixed(2) }}
               </td>
             </tr>
           </tbody>
         </table>
+        <div v-if="historyTimeAverage[difficulty].time > 0" class="states">
+          <div>
+            average time: <b>{{historyTimeAverage[difficulty].time.toFixed(2)}}</b>
+          </div>
+          <div>
+            average thinking time: <b>{{historyTimeAverage[difficulty].thinkingTime.toFixed(2)}}</b>
+          </div>
+        </div>
       </div>
     </div>
     <div v-if="historyLevels.length > 0" class="clear">
       <button @click="clearHistory" class="btn">Clear history</button>
+    </div>
+    <div class="note">
+      <div v-if="historyLevels.length > 0" class="italic">
+        thinking time is the respone time without the typing time
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import generator from '../script/generator'
+
+let typingTimer
+let typingTimeout
 
 export default {
   name: 'Mental',
@@ -143,22 +165,61 @@ export default {
       maxNumber: 100,
       winned: 0,
       totalWins: 0,
-      totalFails: 0
+      totalFails: 0,
+      typingTime: 0,
+      isTyping: false,
+      typingWait: false,
+      typingTimeTemp: 0
     }
   },
   methods: {
+    type() {
+      if (this.answer) {
+        clearTimeout(typingTimeout)
+        this.isTyping = true
+        this.typingTimeTemp = this.typingTime
+        typingTimer = setInterval(() => {
+          if (this.isTyping) {
+            this.typingTime += 1
+          }
+        }, 1)
+        typingTimeout = setTimeout(() => {
+          this.stopTyping()
+        }, 1500)
+      } else {
+        this.stopTyping()
+        this.typingTime = 0
+      }
+    },
+    stopTyping() {
+      this.isTyping = false
+      clearInterval(typingTimer)
+    },
+    regenerate() {
+      this.addHistory(true)
+      this.generate(true)
+    },
+    addHistory(giveup = false) {
+      if (!this.history[this.realLevel]) {
+        this.$set(this.history, this.realLevel, [])
+      }
+      this.history[this.realLevel].push({
+        ...this.mental,
+        fails: this.fails,
+        thinkingTime: !giveup ? (this.actualTime - this.typingTime / 1000) : 0,
+        time: this.actualTime,
+        giveup
+      })
+      this.cacheHistory()
+    },
+    cacheHistory() {
+      localStorage.setItem('history', JSON.stringify(this.history))
+    },
     validate () {
+      this.stopTyping();
+      this.typingTime = this.typingTimeTemp
       if (this.answer === this.mental.result) {
-        if (!this.history[this.level]) {
-          this.$set(this.history, this.level, [])
-        }
-        this.history[this.level].push({
-          ...this.mental,
-          fails: this.fails,
-          time: this.actualTime,
-          difficulty: this.level
-        })
-        localStorage.setItem('history', JSON.stringify(this.history))
+        this.addHistory()
         this.totalWins++
         this.fails = 0
         this.wins++
@@ -184,6 +245,8 @@ export default {
         //   }
         // }
       }
+      this.typingTime = 0
+      this.typingTimeTemp = 0
       setTimeout(() => this.winned = 0, 1000)
       this.answer = null
     },
@@ -246,23 +309,55 @@ export default {
     },
     sortedHistory () {
       return this.historyLevels.sort(this.sort).reduce((prev, difficulty) => {
-        const items = this.history[difficulty].sort(this.sort)
+        const items = this.history[difficulty].sort(this.sort).sort((a, b) => {
+          if (!a.giveup && b.giveup) {
+            return -1
+          }
+          if (a.giveup && !b.giveup) {
+            return 1
+          }
+          return 0
+        })
         return {
           ...prev,
           [difficulty]: items
         }
       }, {})
     },
-    historyTimeSums () {
+    historyCountItems() {
       return this.historyLevels.reduce((prev, difficulty) => {
-        const sum = this.history[difficulty].reduce((prev, item) => {
-          return prev + item.time
-        }, 0)
         return {
           ...prev,
-          [difficulty]: sum
+          [difficulty]: this.history[difficulty].filter(item => !item.giveup).length
         }
       }, {})
+    },
+    historyTimeAverage () {
+      return this.historyLevels.reduce((prev, difficulty) => {
+        const sum = this.history[difficulty].reduce((prev, item) => {
+          if (item.giveup) {
+            return prev
+          }
+          return {
+            time: prev.time + item.time,
+            thinkingTime: prev.thinkingTime + item.thinkingTime
+          }
+        }, {
+          time: 0,
+          thinkingTime: 0
+        })
+        const itemsCount = this.historyCountItems[difficulty]
+        return {
+          ...prev,
+          [difficulty]: {
+            time: itemsCount ? (sum.time / itemsCount) : 0,
+            thinkingTime: itemsCount ? (sum.thinkingTime / itemsCount) : 0
+          }
+        }
+      }, {})
+    },
+    realLevel() {
+      return this.level - 1
     }
   }
 }
@@ -275,6 +370,16 @@ export default {
   margin-top 80px
   margin-bottom 30px
   justify-content center
+  .btn
+    margin-right 1em
+    margin-left 1em
+
+.italic
+  font-style italic
+
+.note
+  margin-top 100px
+  margin-bottom 40px
 
 .history
   margin-top 100px
@@ -288,7 +393,7 @@ export default {
   font-weight bolder
 
 .history-container
-  width 90%
+  width 95%
 
 .history-table
   width 100%
@@ -314,6 +419,22 @@ export default {
   background red
   border-radius 20px
 
+.give-up
+  background-color: black
+
+table
+  width 100%
+  display block
+  overflow-x auto
+  white-space nowrap
+  border-collapse collapse
+
+td, th
+  padding: .6em 1em;
+
+tr:nth-child(2n)
+  background rgba(44, 62, 80, 0.07)
+
 #controls
   margin-top: 20px
   #refresh
@@ -327,7 +448,6 @@ export default {
 .states
   user-select none
   margin-top: 40px
-  font-weight: bold
 
 .win
   border: 3px solid #53d397
@@ -335,7 +455,22 @@ export default {
 .loose
   border: 3px solid #ff1f5a
 
-input
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button
+  -webkit-appearance: none
+  margin: 0
+
+input[type="number"]
+  -moz-appearance:textfield;
+  background: rgb(231, 231, 231)
+  border: none
+  color: rgb(99, 99, 99)
+  border-radius: 10px
+  font-weight: bold
+  font-size: 1.6em
+  padding: 10px 20px
+  width: 25%
+  min-width: 150px
   transition all .2s
   border 3px solid transparent
   outline: none

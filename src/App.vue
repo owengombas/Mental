@@ -25,17 +25,7 @@ export default {
 	text-align: center
 	color: #2c3e50
 	margin-top: 30px
-
-input[type="text"]
-	background: rgb(231, 231, 231)
-	border: none
-	color: rgb(99, 99, 99)
-	border-radius: 10px
-	font-weight: bold
-	font-size: 1.6em
-	padding: 10px 20px
-	width: 25%
-	min-width: 150px
+	overflow-x hidden
 
 button
 	background: none
