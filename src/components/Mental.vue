@@ -400,6 +400,8 @@ export default {
 .note
   div
     display inline-block
+    margin 0.5em 0.4em
+    vertical-align middle
   display flex
   flex-direction column
   text-align center
