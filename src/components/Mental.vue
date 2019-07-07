@@ -154,7 +154,7 @@ export default {
       },
       history: {},
       answer: null,
-      maxLevel: 11,
+      maxLevel: 5,
       minLevel: minLevel,
       level: minLevel,
       fails: 0,
