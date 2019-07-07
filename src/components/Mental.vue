@@ -77,7 +77,7 @@
 
     <div v-for="(difficulty, index) in historyLevels" :key="index" class="history">
       <div v-if="history[difficulty] && difficulty" class="history-container">
-        <h1>History for difficulty {{ difficulty }}</h1>
+        <h1>History for level {{ difficulty }}</h1>
         <div class="table-container">
           <table class="history-table">
             <thead>
