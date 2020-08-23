@@ -52,20 +52,20 @@
         </g>
       </svg>
     </div>
-    <div class="settings-button" @click="showSettings = false" v-else>
-      <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-        viewBox="0 0 512 512.001" style="enable-background:new 0 0 512 512.001;" xml:space="preserve">
-      <g>
-        <g>
-          <path d="M284.284,256L506.142,34.142c7.811-7.81,7.811-20.474,0-28.284c-7.811-7.811-20.474-7.811-28.284,0L256,227.716
-            L34.142,5.858c-7.811-7.811-20.474-7.811-28.284,0c-7.811,7.81-7.811,20.474,0,28.284L227.716,256L5.858,477.858
-            c-7.811,7.811-7.811,20.474,0,28.284c7.81,7.81,20.473,7.811,28.284,0L256,284.284l221.858,221.858
-            c7.81,7.81,20.473,7.811,28.284,0c7.811-7.811,7.811-20.474,0-28.284L284.284,256z"/>
-        </g>
-      </g>
-      </svg>
-    </div>
     <div v-if="showSettings" class="settings-wrapper">
+      <div class="settings-button" @click="showSettings = false">
+        <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+          viewBox="0 0 512 512.001" style="enable-background:new 0 0 512 512.001;" xml:space="preserve">
+        <g>
+          <g>
+            <path d="M284.284,256L506.142,34.142c7.811-7.81,7.811-20.474,0-28.284c-7.811-7.811-20.474-7.811-28.284,0L256,227.716
+              L34.142,5.858c-7.811-7.811-20.474-7.811-28.284,0c-7.811,7.81-7.811,20.474,0,28.284L227.716,256L5.858,477.858
+              c-7.811,7.811-7.811,20.474,0,28.284c7.81,7.81,20.473,7.811,28.284,0L256,284.284l221.858,221.858
+              c7.81,7.81,20.473,7.811,28.284,0c7.811-7.811,7.811-20.474,0-28.284L284.284,256z"/>
+          </g>
+        </g>
+        </svg>
+      </div>
       <div class="settings">
         <div>
           <input v-model="operations.times" type="checkbox"/>
@@ -105,144 +105,146 @@
       </div>
     </div>
 
-    <h1 :style="{fontSize}">
-      {{mental.text}}
-    </h1>
+    <div class="main">
+      <h1 :style="{fontSize}">
+        {{mental.text}}
+      </h1>
 
-    <input
-    v-model.number="answer"
-    @input="type"
-    @blur="type"
-    @keydown.enter="validate"
-    :class="{'win': winned === 1, 'loose': winned === -1}"
-    type="number"
-    placeholder="égale..."
-    />
+      <input
+      v-model.number="answer"
+      @input="type"
+      @blur="type"
+      @keydown.enter="validate"
+      :class="{'win': winned === 1, 'loose': winned === -1}"
+      type="number"
+      placeholder="égale..."
+      />
 
-    <div id="controls">
-      <button @click="setLevel(-1)" id="down" :disabled="level <= minLevel">
-        <svg version="1.1" id="Capa_1" width="25px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-          viewBox="0 0 28 28" style="enable-background:new 0 0 30 30;" xml:space="preserve">
-          <path d="M10.273,5.009c0.444-0.444,1.143-0.444,1.587,0c0.429,0.429,0.429,1.143,0,1.571l-8.047,8.047h26.554
-          c0.619,0,1.127,0.492,1.127,1.111c0,0.619-0.508,1.127-1.127,1.127H3.813l8.047,8.032c0.429,0.444,0.429,1.159,0,1.587
-          c-0.444,0.444-1.143,0.444-1.587,0l-9.952-9.952c-0.429-0.429-0.429-1.143,0-1.571L10.273,5.009z"/>
-        </svg>
-      </button>
-      <button id="refresh" @click="regenerate">
-        <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-            viewBox="0 0 489.711 489.711" style="enable-background:new 0 0 489.711 489.711;" xml:space="preserve">
-          <g>
+      <div id="controls">
+        <button @click="setLevel(-1)" id="down" :disabled="level <= minLevel">
+          <svg version="1.1" id="Capa_1" width="25px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+            viewBox="0 0 28 28" style="enable-background:new 0 0 30 30;" xml:space="preserve">
+            <path d="M10.273,5.009c0.444-0.444,1.143-0.444,1.587,0c0.429,0.429,0.429,1.143,0,1.571l-8.047,8.047h26.554
+            c0.619,0,1.127,0.492,1.127,1.111c0,0.619-0.508,1.127-1.127,1.127H3.813l8.047,8.032c0.429,0.444,0.429,1.159,0,1.587
+            c-0.444,0.444-1.143,0.444-1.587,0l-9.952-9.952c-0.429-0.429-0.429-1.143,0-1.571L10.273,5.009z"/>
+          </svg>
+        </button>
+        <button id="refresh" @click="regenerate">
+          <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+              viewBox="0 0 489.711 489.711" style="enable-background:new 0 0 489.711 489.711;" xml:space="preserve">
             <g>
-              <path d="M112.156,97.111c72.3-65.4,180.5-66.4,253.8-6.7l-58.1,2.2c-7.5,0.3-13.3,6.5-13,14c0.3,7.3,6.3,13,13.5,13
-                c0.2,0,0.3,0,0.5,0l89.2-3.3c7.3-0.3,13-6.2,13-13.5v-1c0-0.2,0-0.3,0-0.5v-0.1l0,0l-3.3-88.2c-0.3-7.5-6.6-13.3-14-13
-                c-7.5,0.3-13.3,6.5-13,14l2.1,55.3c-36.3-29.7-81-46.9-128.8-49.3c-59.2-3-116.1,17.3-160,57.1c-60.4,54.7-86,137.9-66.8,217.1
-                c1.5,6.2,7,10.3,13.1,10.3c1.1,0,2.1-0.1,3.2-0.4c7.2-1.8,11.7-9.1,9.9-16.3C36.656,218.211,59.056,145.111,112.156,97.111z"/>
-              <path d="M462.456,195.511c-1.8-7.2-9.1-11.7-16.3-9.9c-7.2,1.8-11.7,9.1-9.9,16.3c16.9,69.6-5.6,142.7-58.7,190.7
-                c-37.3,33.7-84.1,50.3-130.7,50.3c-44.5,0-88.9-15.1-124.7-44.9l58.8-5.3c7.4-0.7,12.9-7.2,12.2-14.7s-7.2-12.9-14.7-12.2l-88.9,8
-                c-7.4,0.7-12.9,7.2-12.2,14.7l8,88.9c0.6,7,6.5,12.3,13.4,12.3c0.4,0,0.8,0,1.2-0.1c7.4-0.7,12.9-7.2,12.2-14.7l-4.8-54.1
-                c36.3,29.4,80.8,46.5,128.3,48.9c3.8,0.2,7.6,0.3,11.3,0.3c55.1,0,107.5-20.2,148.7-57.4
-                C456.056,357.911,481.656,274.811,462.456,195.511z"/>
+              <g>
+                <path d="M112.156,97.111c72.3-65.4,180.5-66.4,253.8-6.7l-58.1,2.2c-7.5,0.3-13.3,6.5-13,14c0.3,7.3,6.3,13,13.5,13
+                  c0.2,0,0.3,0,0.5,0l89.2-3.3c7.3-0.3,13-6.2,13-13.5v-1c0-0.2,0-0.3,0-0.5v-0.1l0,0l-3.3-88.2c-0.3-7.5-6.6-13.3-14-13
+                  c-7.5,0.3-13.3,6.5-13,14l2.1,55.3c-36.3-29.7-81-46.9-128.8-49.3c-59.2-3-116.1,17.3-160,57.1c-60.4,54.7-86,137.9-66.8,217.1
+                  c1.5,6.2,7,10.3,13.1,10.3c1.1,0,2.1-0.1,3.2-0.4c7.2-1.8,11.7-9.1,9.9-16.3C36.656,218.211,59.056,145.111,112.156,97.111z"/>
+                <path d="M462.456,195.511c-1.8-7.2-9.1-11.7-16.3-9.9c-7.2,1.8-11.7,9.1-9.9,16.3c16.9,69.6-5.6,142.7-58.7,190.7
+                  c-37.3,33.7-84.1,50.3-130.7,50.3c-44.5,0-88.9-15.1-124.7-44.9l58.8-5.3c7.4-0.7,12.9-7.2,12.2-14.7s-7.2-12.9-14.7-12.2l-88.9,8
+                  c-7.4,0.7-12.9,7.2-12.2,14.7l8,88.9c0.6,7,6.5,12.3,13.4,12.3c0.4,0,0.8,0,1.2-0.1c7.4-0.7,12.9-7.2,12.2-14.7l-4.8-54.1
+                  c36.3,29.4,80.8,46.5,128.3,48.9c3.8,0.2,7.6,0.3,11.3,0.3c55.1,0,107.5-20.2,148.7-57.4
+                  C456.056,357.911,481.656,274.811,462.456,195.511z"/>
+              </g>
             </g>
-          </g>
-        </svg>
-      </button>
-      <button @click="setLevel(1)" id="up" :disabled="level >= maxLevel">
-        <svg version="1.1" id="Capa_1" width="25px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-          viewBox="0 0 28 28" style="enable-background:new 0 0 30 30;" xml:space="preserve">
-          <path d="M10.273,5.009c0.444-0.444,1.143-0.444,1.587,0c0.429,0.429,0.429,1.143,0,1.571l-8.047,8.047h26.554
-          c0.619,0,1.127,0.492,1.127,1.111c0,0.619-0.508,1.127-1.127,1.127H3.813l8.047,8.032c0.429,0.444,0.429,1.159,0,1.587
-          c-0.444,0.444-1.143,0.444-1.587,0l-9.952-9.952c-0.429-0.429-0.429-1.143,0-1.571L10.273,5.009z"/>
-        </svg>
-      </button>
-    </div>
+          </svg>
+        </button>
+        <button @click="setLevel(1)" id="up" :disabled="level >= maxLevel">
+          <svg version="1.1" id="Capa_1" width="25px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+            viewBox="0 0 28 28" style="enable-background:new 0 0 30 30;" xml:space="preserve">
+            <path d="M10.273,5.009c0.444-0.444,1.143-0.444,1.587,0c0.429,0.429,0.429,1.143,0,1.571l-8.047,8.047h26.554
+            c0.619,0,1.127,0.492,1.127,1.111c0,0.619-0.508,1.127-1.127,1.127H3.813l8.047,8.032c0.429,0.444,0.429,1.159,0,1.587
+            c-0.444,0.444-1.143,0.444-1.587,0l-9.952-9.952c-0.429-0.429-0.429-1.143,0-1.571L10.273,5.009z"/>
+          </svg>
+        </button>
+      </div>
 
-    <div class="states">
-      <h2>
-        {{actualTime.toFixed(0)}} s
-      </h2>
-      <!--<div id="wins" v-if="level < maxLevel">
-        Up in {{maxWins - wins}} wins
-      </div>
-      <div id="fails" v-if="level > minLevel">
-        Down in {{maxFails - fails}} fails
-      </div>-->
-    </div>
-
-    <div class="states">
-      <div>
-        niveau: <b>{{level - 1}}</b>
-      </div>
-      <div>
-        victoires: <b>{{totalWins}}</b>
-      </div>
-      <div>
-        erreurs: <b>{{totalFails}}</b>
-      </div>
-    </div>
-
-    <div v-for="(difficulty, index) in historyLevels" :key="index" class="history">
-      <div v-if="history[difficulty] && difficulty" class="history-container">
-        <h1>Stats du niveau {{ difficulty }}</h1>
-        <div class="table-container">
-          <table class="history-table">
-            <thead>
-              <tr class="history-item-header">
-                <th class="history-item-text">
-                  Calcul
-                </th>
-                <th class="history-item-fails">
-                  Erreurs
-                </th>
-                <th class="history-item-time">
-                  Temps total (en secondes)
-                </th>
-                <th class="history-item-time">
-                  Temps de réflexion (en secondes)
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="history-item" v-for="(item, index) in sortedHistory[difficulty]" :key="index">
-                <td class="history-item-text">
-                  <div v-if="!item.giveup" class="indicator" :style="{opacity: (item.time / sortedHistory[difficulty][0].time)}"/>
-                  <div v-else class="indicator give-up"/>
-                  {{ item.text }} = {{ item.result }}
-                </td>
-                <td class="history-item-fails">
-                  {{ item.fails }}
-                </td>
-                <td class="history-item-time">
-                  {{ item.time.toFixed(2) }}
-                </td>
-                <td class="history-item-time">
-                  {{ item.thinkingTime.toFixed(2) }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+      <div class="states">
+        <h2>
+          {{actualTime.toFixed(0)}} s
+        </h2>
+        <!--<div id="wins" v-if="level < maxLevel">
+          Up in {{maxWins - wins}} wins
         </div>
-        <div v-if="historyTimeAverage[difficulty].time > 0" class="states">
-          <div>
-            Temps total moyen: <b>{{historyTimeAverage[difficulty].time.toFixed(2)}}</b>
-          </div>
-          <div>
-            Temps de réflexion moyen: <b>{{historyTimeAverage[difficulty].thinkingTime.toFixed(2)}}</b>
-          </div>
+        <div id="fails" v-if="level > minLevel">
+          Down in {{maxFails - fails}} fails
+        </div>-->
+      </div>
+
+      <div class="states">
+        <div>
+          niveau: <b>{{level - 1}}</b>
+        </div>
+        <div>
+          victoires: <b>{{totalWins}}</b>
+        </div>
+        <div>
+          erreurs: <b>{{totalFails}}</b>
         </div>
       </div>
-    </div>
-    <div v-if="historyLevels.length > 0" class="clear">
-      <button @click="clearHistory" class="btn">Supprimer l'historique de calcul</button>
-    </div>
-    <div class="note">
-      <div v-if="historyLevels.length > 0" class="italic">
-        <div class="indicator"/>Ce point indique ta difficulté pour ce calcul (plus c'est rouge, plus tu as mis du temps)
+
+      <div v-for="(difficulty, index) in historyLevels" :key="index" class="history">
+        <div v-if="history[difficulty] && difficulty" class="history-container">
+          <h1>Stats du niveau {{ difficulty }}</h1>
+          <div class="table-container">
+            <table class="history-table">
+              <thead>
+                <tr class="history-item-header">
+                  <th class="history-item-text">
+                    Calcul
+                  </th>
+                  <th class="history-item-fails">
+                    Erreurs
+                  </th>
+                  <th class="history-item-time">
+                    Temps total (en secondes)
+                  </th>
+                  <th class="history-item-time">
+                    Temps de réflexion (en secondes)
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="history-item" v-for="(item, index) in sortedHistory[difficulty]" :key="index">
+                  <td class="history-item-text">
+                    <div v-if="!item.giveup" class="indicator" :style="{opacity: (item.time / sortedHistory[difficulty][0].time)}"/>
+                    <div v-else class="indicator give-up"/>
+                    {{ item.text }} = {{ item.result }}
+                  </td>
+                  <td class="history-item-fails">
+                    {{ item.fails }}
+                  </td>
+                  <td class="history-item-time">
+                    {{ item.time.toFixed(2) }}
+                  </td>
+                  <td class="history-item-time">
+                    {{ item.thinkingTime.toFixed(2) }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div v-if="historyTimeAverage[difficulty].time > 0" class="states">
+            <div>
+              Temps total moyen: <b>{{historyTimeAverage[difficulty].time.toFixed(2)}}</b>
+            </div>
+            <div>
+              Temps de réflexion moyen: <b>{{historyTimeAverage[difficulty].thinkingTime.toFixed(2)}}</b>
+            </div>
+          </div>
+        </div>
       </div>
-      <div v-if="historyLevels.length > 0" class="italic">
-        <div class="indicator give-up"/>Ce point indique que tu as abandonné ce calcul
+      <div v-if="historyLevels.length > 0" class="clear">
+        <button @click="clearHistory" class="btn">Supprimer l'historique de calcul</button>
       </div>
-      <div v-if="historyLevels.length > 0" class="italic">
-        Le temps de réflexion est le temps que tu as mis avant de tapper la réponse sur ton clavier
+      <div class="note">
+        <div v-if="historyLevels.length > 0" class="italic">
+          <div class="indicator"/>Ce point indique ta difficulté pour ce calcul (plus c'est rouge, plus tu as mis du temps)
+        </div>
+        <div v-if="historyLevels.length > 0" class="italic">
+          <div class="indicator give-up"/>Ce point indique que tu as abandonné ce calcul
+        </div>
+        <div v-if="historyLevels.length > 0" class="italic">
+          Le temps de réflexion est le temps que tu as mis avant de tapper la réponse sur ton clavier
+        </div>
       </div>
     </div>
   </div>
@@ -284,7 +286,7 @@ export default {
       typingWait: false,
       typingTimeTemp: 0,
       fontSize: '2em',
-      minLevel: 0,
+      minLevel: 2,
       minNumber: 1,
       showSettings: false,
       operations: {
@@ -502,6 +504,9 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+.main
+  margin-top 80px
+
 .settings-button
   width: 40px
   position fixed
@@ -532,17 +537,21 @@ label
   justify-content start
   align-items start
   input[type="number"]
-    width 100%
+    width 50px
+    margin-top 5px
 
 .form-text
   align-items center
   display flex
-  margin-top 10px
+  flex-direction column
+  margin-top 20px
   
 .settings-wrapper
+  top: 0
   z-index 999
   width 100%
   height 100vh
+  left: 0
   position fixed
   background rgba(255, 255, 255, 0.6)
   backdrop-filter blur(10px)
