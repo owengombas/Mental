@@ -296,7 +296,7 @@ export default {
   },
   watch: {
     showSettings() {
-      this.regenerate() 
+      this.regenerate(false) 
     }
   },
   methods: {
@@ -322,8 +322,10 @@ export default {
       this.isTyping = false
       clearInterval(typingTimer)
     },
-    regenerate() {
-      this.addHistory(true)
+    regenerate(addHistory = true) {
+      if (addHistory) {
+        this.addHistory(true)
+      }
       this.generate(true)
     },
     addHistory(giveup = false) {
