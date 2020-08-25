@@ -33,12 +33,16 @@ export default function getRandom (
   count,
   max = 10,
   min = 1,
-  operations = { minus: true, plus: true, times: true }
+  operations = { minus: true, plus: true, times: true, neg: true }
 ) {
   let text = ''
   let operation = ''
   for (let i = 0; i < count; i++) {
-    let coefficient = Math.floor(Math.random() * 2) === 1 ? 1 : -1
+    let coefficient = 1
+
+    if (operations.neg) {
+      coefficient = Math.floor(Math.random() * 3) === 1 ? 1 : -1
+    }
 
     if (i > 0) {
       operation = getOperation(operations)

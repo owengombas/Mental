@@ -79,6 +79,10 @@
           <input v-model="operations.minus" type="checkbox"/>
           <label>Soustractions</label>
         </div>
+        <div>
+          <input v-model="operations.neg" type="checkbox"/>
+          <label>Nombres négatifs</label>
+        </div>
         <div class="form-text">
           <label>
             Nombre maximum
@@ -292,7 +296,8 @@ export default {
       operations: {
         minus: true,
         plus: true,
-        times: true
+        times: true,
+        neg: true
       }
     }
   },
